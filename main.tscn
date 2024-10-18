@@ -1,0 +1,60 @@
+[gd_scene load_steps=8 format=3 uid="uid://c5aukuqr78h14"]
+
+[ext_resource type="Texture2D" uid="uid://dfrnfc1o2qh1v" path="res://Assets/Bar.png" id="1_0eb6o"]
+[ext_resource type="Script" path="res://bar_body.gd" id="1_xhbpa"]
+[ext_resource type="Texture2D" uid="uid://bfsq1wr0h1fbj" path="res://Assets/Ball.png" id="2_5wy6p"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_88wpc"]
+radius = 33.2415
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hfkxe"]
+size = Vector2(1280, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_j0nn3"]
+size = Vector2(20, 1920)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_r40ah"]
+size = Vector2(20, 1920)
+
+[node name="Node2D" type="Node2D"]
+position = Vector2(640, 720)
+
+[node name="Ball" type="RigidBody2D" parent="."]
+position = Vector2(0, 245)
+
+[node name="BallSprite" type="Sprite2D" parent="Ball"]
+texture = ExtResource("2_5wy6p")
+
+[node name="BallCollider" type="CollisionShape2D" parent="Ball"]
+shape = SubResource("CircleShape2D_88wpc")
+debug_color = Color(0.801038, 0.319046, 0.696946, 0.42)
+
+[node name="BarBody" type="CharacterBody2D" parent="."]
+position = Vector2(0, 640)
+script = ExtResource("1_xhbpa")
+
+[node name="BarSprite" type="Sprite2D" parent="BarBody"]
+texture = ExtResource("1_0eb6o")
+
+[node name="BarCollider" type="CollisionShape2D" parent="BarBody"]
+shape = SubResource("RectangleShape2D_hfkxe")
+
+[node name="left_control" type="Marker2D" parent="BarBody"]
+position = Vector2(-640, 0)
+
+[node name="right_control" type="Marker2D" parent="BarBody"]
+position = Vector2(640, 0)
+
+[node name="Left Wall" type="StaticBody2D" parent="."]
+position = Vector2(-640, 0)
+
+[node name="LWallCollider" type="CollisionShape2D" parent="Left Wall"]
+shape = SubResource("RectangleShape2D_j0nn3")
+
+[node name="Right Wall" type="StaticBody2D" parent="."]
+position = Vector2(640, 0)
+
+[node name="RWallCollider" type="CollisionShape2D" parent="Right Wall"]
+shape = SubResource("RectangleShape2D_r40ah")
+
+[node name="Camera2D" type="Camera2D" parent="."]

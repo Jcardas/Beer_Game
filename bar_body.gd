@@ -8,6 +8,7 @@ extends CharacterBody2D
 var left_control: Marker2D
 var right_control: Marker2D
 var collision_shape: CollisionShape2D
+var last_action = "nothing"
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -27,18 +28,56 @@ func _physics_process(delta):
 
 # Moves control nodes based on input
 func _handle_input(delta):
-	var move_amount = MoveSpeed * delta
-	
-	# Update positions for left and right controls simultaneously
-	_move_node("left_up", "left_down", left_control, move_amount)
-	_move_node("right_up", "right_down", right_control, move_amount)
+	_move_node(delta)
 
 # Helper function to move a node up or down based on input
-func _move_node(up_action: String, down_action: String, node: Node2D, move_amount: float):
-	if Input.is_action_pressed(up_action):
-		node.position.y -= move_amount
-	elif Input.is_action_pressed(down_action):
-		node.position.y += move_amount
+func _move_node(delta):
+	var current_distance = left_control.position.distance_to(right_control.position)
+	var max_distance = (original_length / cos(max_rotation))
+	var move_amount = MoveSpeed * delta
+
+	if current_distance <= max_distance:
+		if Input.is_action_pressed("left_up"):
+			left_control.position.y -= move_amount
+			last_action = "left_up"
+		if Input.is_action_pressed("left_down"):
+			left_control.position.y += move_amount
+			last_action = "left_down"
+			
+		if Input.is_action_pressed("right_up"):
+			right_control.position.y -= move_amount
+			last_action = "right_up"
+		if Input.is_action_pressed("right_down"):
+			right_control.position.y += move_amount
+			last_action = "right_down"
+	else:
+		if last_action == "left_up":
+			if Input.is_action_pressed("left_down"):
+				left_control.position.y += move_amount
+			if Input.is_action_pressed("right_up"):
+				right_control.position.y -= move_amount
+			
+		if last_action == "left_down":
+			if Input.is_action_pressed("left_up"):
+				left_control.position.y -= move_amount
+			if Input.is_action_pressed("right_up"):
+				right_control.position.y -= move_amount
+			
+			
+		if last_action == "right_up":
+			if Input.is_action_pressed("left_up"):
+						left_control.position.y -= move_amount
+			if Input.is_action_pressed("right_down"):
+				right_control.position.y += move_amount
+
+		if last_action == "right_down":
+			if Input.is_action_pressed("left_down"):
+						left_control.position.y += move_amount
+			if Input.is_action_pressed("right_up"):
+				right_control.position.y -= move_amount
+	print(last_action)
+			
+			
 
 # Adjusts the bar's transformation to match the control points
 func _update_bar():
@@ -46,6 +85,7 @@ func _update_bar():
 	var distance = left_control.position.distance_to(right_control.position)
 	var angle = (right_control.position - left_control.position).angle()
 
+	print(distance)
 	# Update the position, rotation, and scale of the bar
 	position = midpoint
 	rotation = clamp(angle, -max_rotation, max_rotation)
